@@ -35,6 +35,99 @@
 		<h2>Quadric Error Mesh Decimation</h2>
 		<p>You should create a similar second visualizer and display your results accordingly.</p>
         <div id="container2"></div>
+		<h2>Project Overview</h2>
+        <p>This project delves into advanced techniques for editing 3D models, with a focus on Loop Subdivision and Quadric Error Mesh Simplification. These methods leverage the half-edge data structure to enhance performance by organizing 3D model data efficiently.</p>
+
+        <h3>Loop Subdivision</h3>
+        <p>Loop Subdivision enhances the smoothness and detail of 3D models, particularly those composed of triangular meshes. It works by subdividing the model to add more triangles, thereby increasing complexity and detail based on the original vertices' positions. The half-edge data structure plays a key role by tracking the connections between vertices, edges, and faces, facilitating the intelligent addition of new points and triangles.</p>
+
+        <p>The process starts with organizing the model's data using the half-edge structure. New points are then calculated and placed either at the midpoint of edges or determined through a formula for interior parts, based on nearby points and edges. These points are connected to form new triangles, with repeated application leading to a progressively smoother and more detailed model.</p>
+
+        <h3>Quadric Error Mesh Simplification</h3>
+        <p>This technique simplifies 3D models by reducing their triangle count without significantly altering their shape. It evaluates the potential error introduced by removing points and reorganizing the mesh. Points are scored based on the impact their removal would have on the model's shape, with those causing the least change being removed first. The half-edge data structure is crucial for efficiently finding connected points and faces, thereby aiding in score calculation and point removal decisions.</p>
+
+        <p>For each point considered for removal, the method seeks the best new position that minimizes error, then updates the model by removing the point and adjusting connections. This process continues until the model reaches the desired simplicity.</p>
+
+        <p>In essence, these techniques improve 3D models by smartly adding or removing points and triangles, utilizing the half-edge data structure for data organization.</p>
+
+        <h3>Time Complexity</h3>
+        <p>Vertex Update: I iterate over each vertex to compute new positions, which scales with the number of vertices, making it O(V).
+			Face Update: Each face is subdivided into four new faces, making this operation scale with the number of faces, O(F). However, with each iteration quadrupling the number of faces, the complexity grows exponentially with the number of iterations.
+			Building the half-edge data structure from scratch in each iteration also adds significant overhead, involving iterations over all vertices, edges, and faces to establish half-edge connectivity. This process is O(V + E^2 + F) for each iteration. Based on my implementation, the time complexity for Loop Subdivision is, approximately O (V + E^2 + F), due to the quadrupling of faces with each iteration and the rebuilding of the half-edge structure. For Quadric Error Metrics Decimation, the complexity is dominated by edge collapse priority queue operations, O(E * log E), with additional overhead from mesh updates and error quadric computations. These complexities mirror the nature of the operations in my implementations, though actual performance can vary with mesh structure and specific implementation details.</p>
+
 		<script type="module" src="../js/assignment1.js"></script>
+		    <!-- Adding images for Loop Subdivision -->
+			<h2>Subdivision Plots</h2>
+			<div class="image-container">
+				<img src="../plots/subdivision_1.png" alt="Subdivision Plot Iteration 1">
+				<div class="image-title">Subdivision Plot - Iteration 1</div>
+			</div>
+			<div class="image-container">
+				<img src="../plots/subdivision_2.png" alt="Subdivision Plot Iteration 2">
+				<div class="image-title">Subdivision Plot - Iteration 2</div>
+			</div>
+			<div class="image-container">
+				<img src="../plots/subdivision_3.png" alt="Subdivision Plot Iteration 3">
+				<div class="image-title">Subdivision Plot - Iteration 3</div>
+			</div>
+		
+			<!-- Adding images for Quadric Error Mesh Decimation -->
+			<h2>Decimation Plots</h2>
+			<div class="image-container">
+				<div class="image-title">Decimation Plot - Face Count 11</div>
+				<img src="../plots/decimation_11.png" alt="Decimation Plot - Face Count 11">
+				
+			</div>
+			<div class="image-container">
+				<div class="image-title">Decimation Plot - Face Count 9</div>
+				<img src="../plots/decimation_9.png" alt="Decimation Plot - Face Count 9">
+				
+			</div>
+			<div class="image-container">
+				<div class="image-title">Decimation Plot - Face Count 7</div>
+				<img src="../plots/decimation_7.png" alt="Decimation Plot - Face Count 7">
+				
+			</div>
+			<div class="image-container">
+				<div class="image-title">Decimation Plot - Face Count 5</div>
+				<img src="../plots/decimation_5.png" alt="Decimation Plot - Face Count 5">
+				
+			</div>
+			<div class="image-container">
+				<div class="image-title">Decimation Plot - Face Count 3</div>
+				<img src="../plots/decimation_3.png" alt="Decimation Plot - Face Count 3">
+				
+			</div>
+			<h2>Extra Credit</h2>
+			<p>Loop Subdivision Boundary Case:
+				The implementation of Loop subdivision in your code does not explicitly distinguish between interior and boundary edges when computing new vertex positions. This oversight can lead to improper handling of boundary edges, potentially causing artifacts or undesirable smoothing effects at the mesh boundaries. Boundary edges require special treatment because they only have one adjacent face, and their vertices should not be moved in the same manner as those with full connectivity. To address this, an enhancement in the algorithm to detect and correctly handle boundary edges and vertices is necessary. This would involve adjusting the vertex position calculation for boundary cases, ensuring that the mesh's outer shape is smoothly refined without distorting the boundary geometry.
+				
+				Quadric Error Metrics (QEM) Boundary Case:
+				In the Quadric Error Metrics simplification, a potential boundary case arises when simplifying near sharp features or highly detailed areas of the mesh. The aggressive consolidation of vertices to minimize the overall error metric can lead to a significant loss of detail or alteration of the mesh topology, particularly in areas where preserving geometric fidelity is critical. This problem is exacerbated when the algorithm selects edges for collapse without considering the impact on the mesh's visual or structural integrity. A solution to mitigate this issue involves incorporating a feature-sensitive approach, where the algorithm adjusts the error threshold based on local geometric properties, such as curvature or feature lines, thereby preserving more detail in critical regions while still achieving the desired simplification in less critical areas.</p>
+			<p> Can we preserve the original vertices after decimation (the vertices of the new meshes are a subset of the original vertices) ? Give it a try.</p>
+			<p>Yes, it can be preserved. To run this task for evaluation, in the mesh_decimated function call update extra_credit to True.</p>
+			<div class="image-container">
+				<div class="image-title">Decimation Plot - Face Count 11 - Preserved</div>
+				<img src="../plots/extra_credit_11.png" alt="Decimation Plot - Face Count 11 - preserved">
+				
+			</div>
+			<div class="image-container">
+				<div class="image-title">Decimation Plot - Face Count 9 - Preserved</div>
+				<img src="../plots/extra_credit_9.png" alt="Decimation Plot - Face Count 9 - preserved">
+				
+			</div>
+			<div class="image-container">
+				<div class="image-title">Decimation Plot - Face Count 7 - Preserved</div>
+				<img src="../plots/extra_credit_7.png" alt="Decimation Plot - Face Count 7 - preserved">
+				
+			</div>
+			<div class="image-container">
+				<div class="image-title">Decimation Plot - Face Count 5 - Preserved</div>
+				<img src="../plots/extra_credit_5.png" alt="Decimation Plot - Face Count 5 - preserved">
+				
+			</div>
+
+		</body>
+		</html>
 	</body>
 </html>
