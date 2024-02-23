@@ -33,21 +33,32 @@ Quadric Error Metrics Decimation: Dominated by edge collapse priority queue oper
 These complexities reflect the nature of the operations I performed in my implementations, though actual performance can vary with the structure of the mesh and the specifics of my implementation.
 
 ## Decimation Plots
-[decimation_3.png]: ../plots/decimation_3.png
-[decimation_5.png]: ../plots/decimation_5.png
-[decimation_7.png]: ../plots/decimation_7.png
-[decimation_9.png]: ../plots/decimation_9.png
-[decimation_11.png]: ../plots/decimation_11.png
+
+![Decimation with 3 iterations](../plots/decimation_3.png)
+
+![Decimation with 5 iterations](../plots/decimation_5.png)
+
+![Decimation with 7 iterations](../plots/decimation_7.png)
+
+![Decimation with 9 iterations](../plots/decimation_9.png)
+
+![Decimation with 11 iterations](../plots/decimation_11.png)
 
 ## Subdivision Plots
-[subdivision_1.png]: ../plots/subdivision_1.png
-[subdivision_2.png]: ../plots/subdivision_2.png
-[subdivision_3.png]: ../plots/subdivision_3.png
+
+![Subdivision with 1 iteration](../plots/subdivision_1.png)
+
+![Subdivision with 2 iterations](../plots/subdivision_2.png)
+
+![Subdivision with 3 iterations](../plots/subdivision_3.png)
 
 ## Extra Credits
-[extra_credit_11.png]: ../plots/extra_credit_11.png
-[extra_credit_9.png]: ../plots/extra_credit_9.png
-[extra_credit_7.png]: ../plots/extra_credit_7.png
-[extra_credit_5.png]: ../plots/extra_credit_5.png
 
+![Extra Credit with 11 iterations](../plots/extra_credit_11.png)
+
+![Extra Credit with 9 iterations](../plots/extra_credit_9.png)
+
+![Extra Credit with 7 iterations](../plots/extra_credit_7.png)
+
+![Extra Credit with 5 iterations](../plots/extra_credit_5.png)
 
