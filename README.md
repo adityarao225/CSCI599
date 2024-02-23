@@ -34,15 +34,15 @@ These complexities reflect the nature of the operations I performed in my implem
 
 ## Decimation Plots
 
-![Decimation with 3 iterations](../plots/decimation_3.png)
+![Decimation with 3 iterations](./plots/decimation_3.png)
 
-![Decimation with 5 iterations](../plots/decimation_5.png)
+![Decimation with 5 iterations](./plots/decimation_5.png)
 
-![Decimation with 7 iterations](../plots/decimation_7.png)
+![Decimation with 7 iterations](./plots/decimation_7.png)
 
-![Decimation with 9 iterations](../plots/decimation_9.png)
+![Decimation with 9 iterations](./plots/decimation_9.png)
 
-![Decimation with 11 iterations](../plots/decimation_11.png)
+![Decimation with 11 iterations](./plots/decimation_11.png)
 
 ## Subdivision Plots
 
