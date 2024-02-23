@@ -46,19 +46,19 @@ These complexities reflect the nature of the operations I performed in my implem
 
 ## Subdivision Plots
 
-![Subdivision with 1 iteration](../plots/subdivision_1.png)
+![Subdivision with 1 iteration](./plots/subdivision_1.png)
 
-![Subdivision with 2 iterations](../plots/subdivision_2.png)
+![Subdivision with 2 iterations](./plots/subdivision_2.png)
 
-![Subdivision with 3 iterations](../plots/subdivision_3.png)
+![Subdivision with 3 iterations](./plots/subdivision_3.png)
 
 ## Extra Credits
 
-![Extra Credit with 11 iterations](../plots/extra_credit_11.png)
+![Extra Credit with 11 iterations](./plots/extra_credit_11.png)
 
-![Extra Credit with 9 iterations](../plots/extra_credit_9.png)
+![Extra Credit with 9 iterations](./plots/extra_credit_9.png)
 
-![Extra Credit with 7 iterations](../plots/extra_credit_7.png)
+![Extra Credit with 7 iterations](./plots/extra_credit_7.png)
 
-![Extra Credit with 5 iterations](../plots/extra_credit_5.png)
+![Extra Credit with 5 iterations](./plots/extra_credit_5.png)
 
