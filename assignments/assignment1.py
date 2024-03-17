@@ -293,6 +293,34 @@ def subdivision_loop(mesh, iterations=3):
     :param mesh: input mesh
     :param iterations: number of iterations
     :return: mesh after subdivision
+    
+    Overall process:
+    Reference: https://github.com/mikedh/trimesh/blob/main/trimesh/remesh.py#L207
+    1. Calculate odd vertices.
+      Assign a new odd vertex on each edge and
+      calculate the value for the boundary case and the interior case.
+      The value is calculated as follows.
+          v2
+        / f0 \\        0
+      v0--e--v1      /   \\
+        \\f1 /     v0--e--v1
+          v3
+      - interior case : 3:1 ratio of mean(v0,v1) and mean(v2,v3)
+      - boundary case : mean(v0,v1)
+    2. Calculate even vertices.
+      The new even vertices are calculated with the existing
+      vertices and their adjacent vertices.
+        1---2
+       / \\/ \\      0---1
+      0---v---3     / \\/ \\
+       \\ /\\/    b0---v---b1
+        k...4
+      - interior case : (1-kB):B ratio of v and k adjacencies
+      - boundary case : 3:1 ratio of v and mean(b0,b1)
+    3. Compose new faces with new vertices.
+    
+    # The following implementation considers only the interior cases
+    # You should also consider the boundary cases and more iterations in your submission
     """
     for _ in range(iterations):
         # build half edge data structure for mesh 
