@@ -658,7 +658,7 @@ if __name__ == '__main__':
     # print(mesh_decimated_1.vertices)
     
     # TODO: implement your own quadratic error mesh decimation here
-    mesh_decimated = simplify_quadric_error(mesh, face_count=9,extra_credit=True)
+    mesh_decimated = simplify_quadric_error(mesh, face_count=9,extra_credit=False)
     # print(mesh_decimated_1.vertices)
     # print(mesh_decimated.vertices)
     
