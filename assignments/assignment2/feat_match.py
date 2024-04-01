@@ -14,12 +14,12 @@ def set_arguments(parser):
 
     #directories stuff
     parser.add_argument('--data_files',action='store',type=str,default='',dest='data_files') 
-    parser.add_argument('--data_dir',action='store',type=str,default='./assets/assignment2/Benchmarking_Camera_Calibration_2008/fountain-P11/images',
-                        dest='data_dir',help='directory containing images (default: ../data/fountain-P11/images/)') 
+    parser.add_argument('--data_dir',action='store',type=str,default='./assets/assignment2/Benchmarking_Camera_Calibration_2008/Herz-Jesus-P8/images',
+                        dest='data_dir',help='directory containing images (default: ../data/Herz-Jesus-P8/images/)') 
     parser.add_argument('--ext',action='store',type=str,default='jpg,png',dest='ext',
                         help='comma seperated string of allowed image extensions (default: jpg,png)') 
-    parser.add_argument('--out_dir',action='store',type=str,default='./assets/assignment2/Benchmarking_Camera_Calibration_2008/fountain-P11',
-                        dest='out_dir',help='root directory to store results in (default: ../data/fountain-P11)') 
+    parser.add_argument('--out_dir',action='store',type=str,default='./assets/assignment2/Benchmarking_Camera_Calibration_2008/Herz-Jesus-P8',
+                        dest='out_dir',help='root directory to store results in (default: ../data/Herz-Jesus-P8)') 
 
     #feature matching args
     parser.add_argument('--features',action='store', type=str, default='SIFT', dest='features',

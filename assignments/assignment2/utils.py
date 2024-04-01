@@ -89,20 +89,31 @@ def pts2ply(pts,colors,filename='out.ply'):
             f.write('{} {} {} {} {} {}\n'.format(pt[0],pt[1],pt[2],
                                                 cl[0],cl[1],cl[2]))
 
-def draw_correspondences(img, ptsTrue, ptsReproj, ax, drawOnly=50): 
+
+def draw_correspondences(img, ptsTrue, ptsReproj, ax, drawOnly=50):
     """
     Draws correspondence between ground truth and reprojected feature point
 
-    Args: 
-    ptsTrue, ptsReproj: (n,2) numpy array
-    ax: matplotlib axis object
-    drawOnly: max number of random points to draw
+    Args:
+    img: Image to display
+    ptsTrue: Ground truth points (n, 2) numpy array
+    ptsReproj: Reprojected points (n, 2) numpy array
+    ax: Matplotlib axis object
+    drawOnly: Maximum number of random points to draw
 
-    Returns: 
-    ax: matplotlib axis object
+    Returns:
+    ax: Matplotlib axis object
     """
+
     ax.imshow(img)
-    
-    # TODO: draw correspondence between ptsTrue and ptsReproj
+
+    # Randomly select points for visualization
+    idx = np.random.choice(ptsTrue.shape[0], size=drawOnly, replace=False)
+    ptsTrue_sampled, ptsReproj_sampled = ptsTrue[idx], ptsReproj[idx]
+
+    # Plot ground truth points in red circles and reprojected points in yellow stars
+    ax.scatter(ptsTrue_sampled[:, 0], ptsTrue_sampled[:, 1], marker='o', c='r', linewidths=0.1, label='Ground Truths')
+    ax.scatter(ptsReproj_sampled[:, 0], ptsReproj_sampled[:, 1], marker='*', c='y', linewidths=0.1, label='Reprojected')
+    ax.legend()
 
     return ax

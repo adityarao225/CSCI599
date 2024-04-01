@@ -5,10 +5,11 @@ import pickle
 import os 
 from time import time
 import matplotlib.pyplot as plt
+from scipy.sparse import lil_matrix
+from scipy.optimize import least_squares
 
 from utils import * 
 import pdb 
-
 
 def set_arguments(parser): 
     """
@@ -24,8 +25,8 @@ def set_arguments(parser):
     #directory stuff
     parser.add_argument('--data_dir',action='store',type=str,default='./assets/assignment2/Benchmarking_Camera_Calibration_2008',dest='data_dir',
                         help='root directory containing input data (default: ../data/)') 
-    parser.add_argument('--dataset',action='store',type=str,default='fountain-P11',dest='dataset',
-                        help='name of dataset (default: fountain-P11)') 
+    parser.add_argument('--dataset',action='store',type=str,default='Herz-Jesus-P8',dest='dataset',
+                        help='name of dataset (default: Herz-Jesus-P8)') 
     parser.add_argument('--ext',action='store',type=str,default='jpg,png',dest='ext', 
                         help='comma seperated string of allowed image extensions (default: jpg,png)') 
     parser.add_argument('--out_dir',action='store',type=str,default='./assets/assignment2/results/',dest='out_dir',
@@ -44,9 +45,9 @@ def set_arguments(parser):
                         dest='calibration_mat',help='[benchmark|lg_g3] type of intrinsic camera to use (default: benchmark)')
     parser.add_argument('--fund_method',action='store',type=str,default='FM_RANSAC',
                         dest='fund_method',help='method to estimate fundamental matrix (default: FM_RANSAC)')
-    parser.add_argument('--outlier_thres',action='store',type=float,default=.9,
+    parser.add_argument('--outlier_thres',action='store',type=float,default=.3,
                         dest='outlier_thres',help='threhold value of outlier to be used in fundamental matrix estimation (default: 0.9)')
-    parser.add_argument('--fund_prob',action='store',type=float,default=.9,dest='fund_prob',
+    parser.add_argument('--fund_prob',action='store',type=float,default=.3,dest='fund_prob',
                         help='confidence in fundamental matrix estimation required (default: 0.9)')
     
     #PnP parameters
@@ -312,6 +313,44 @@ class SFM(object):
         Returns:
             None
         """
+
+        def triangulation(img1pts, img2pts, R1, t1, R2, t2): 
+            """
+            Perform triangulation to estimate the 3D coordinates of points in the scene.
+
+            Args:
+                img1pts (numpy.ndarray): 2D image points in the first image.
+                img2pts (numpy.ndarray): 2D image points in the second image.
+                R1 (numpy.ndarray): Rotation matrix of the first camera.
+                t1 (numpy.ndarray): Translation vector of the first camera.
+                R2 (numpy.ndarray): Rotation matrix of the second camera.
+                t2 (numpy.ndarray): Translation vector of the second camera.
+
+            Returns:
+                numpy.ndarray: 3D coordinates of the triangulated points.
+
+            """
+            img1ptsHom = cv2.convertPointsToHomogeneous(img1pts)[:,0,:]
+            img2ptsHom = cv2.convertPointsToHomogeneous(img2pts)[:,0,:]
+
+            img1ptsNorm = (np.linalg.inv(self.K).dot(img1ptsHom.T)).T
+            img2ptsNorm = (np.linalg.inv(self.K).dot(img2ptsHom.T)).T
+
+            img1ptsNorm = cv2.convertPointsFromHomogeneous(img1ptsNorm)[:,0,:]
+            img2ptsNorm = cv2.convertPointsFromHomogeneous(img2ptsNorm)[:,0,:]
+
+            pts4d = cv2.triangulatePoints(np.hstack((R1,t1)),np.hstack((R2,t2)),
+                                            img1ptsNorm.T,img2ptsNorm.T)
+            pts3d = cv2.convertPointsFromHomogeneous(pts4d.T)[:,0,:]
+
+            return pts3d
+
+        def update_3D_reference(ref1, ref2, img1idx, img2idx, upp_limit, low_limit=0): 
+
+            ref1[img1idx] = np.arange(upp_limit) + low_limit
+            ref2[img2idx] = np.arange(upp_limit) + low_limit
+
+            return ref1, ref2
         for prev_name in self.image_data.keys(): 
             if prev_name != name: 
                 kp1, desc1 = self.load_features(prev_name)
@@ -320,10 +359,20 @@ class SFM(object):
                 prev_name_ref = self.image_data[prev_name][-1]
                 matches = self.load_matches(prev_name,name)
                 matches = [match for match in matches if prev_name_ref[match.queryIdx] < 0]
+            
 
                 if len(matches) > 0: 
                     # TODO: Process the new view
-                    pass
+                    sorted_matches = sorted(matches,  key = lambda x:x.distance)
+
+                    points_img1, points_img2, indices_img1, indices_img2 = self.get_aligned_matches(kp1, desc1, kp2, desc2, sorted_matches)
+                    
+                    fundamental_matrix, inliers_mask = cv2.findFundamentalMat(points_img1, points_img2, method=opts.fund_method, ransacReprojThreshold=opts.outlier_thres, confidence=opts.fund_prob)
+                    inliers_mask = inliers_mask.ravel().astype(bool)
+
+                    self.matches_data[(prev_name, name)] = [sorted_matches, points_img1[inliers_mask], points_img2[inliers_mask], 
+                                                            indices_img1[inliers_mask], indices_img2[inliers_mask]]
+                    self.triangulate_two_views(prev_name, name)
                 else: 
                     print('skipping {} and {}'.format(prev_name, name))
         
@@ -408,6 +457,25 @@ class SFM(object):
         colors = get_colors()
         pts2ply(self.point_cloud, colors, filename)
 
+    def reprojection_points(self, X, R, t, K):
+        """
+        Transforms 3D points in the world coordinate system to 2D points in the image coordinate system.
+
+        Parameters:
+        - X: 3D points in the world coordinate system.
+        - R: Rotation matrix of the camera.
+        - t: Translation vector of the camera.
+        - K: Camera matrix (intrinsic parameters).
+
+        Returns:
+        - Converted 2D points in the image coordinate system.
+        """
+        projected_homogeneous = K @ (R @ X.T + t)
+        # Convert the homogeneous coordinates to 2D points
+        converted_points = cv2.convertPointsFromHomogeneous(projected_homogeneous.T)[:, 0, :]
+        return converted_points
+
+
     def compute_reprojection_error(self, name): 
         """
         Computes the reprojection error for a given image and also visualize the reprojection as PNG/JPG plot.
@@ -419,32 +487,43 @@ class SFM(object):
         - err (float): The average reprojection error.
         """
 
-        # TODO: Reprojection error calculation
         R, t, ref = self.image_data[name]
-        kp, desc = self.load_features(name)
-        err = 0
+        valid_indices = ref[ref > 0].astype(int)
+        selected_points = self.point_cloud[valid_indices]
+        rep_pts = self.reprojection_points(selected_points, R, t, self.K)
 
-        # TODO: PLOT here
+        kp, desc = self.load_features(name)
+        filtered_indices = np.where(ref > 0)[0]
+        img_pts = np.array([kp[idx].pt for idx in filtered_indices])
+        
+        err = np.mean(np.sqrt(np.sum((img_pts-rep_pts)**2,axis=-1)))
+
         if self.opts.plot_error: 
             fig,ax = plt.subplots()
             image = cv2.imread(os.path.join(self.images_dir, name+'.jpg'))[:,:,::-1]
-            # ax = draw_correspondences(image, img_pts, reproj_pts, ax)
+            ax = draw_correspondences(image, img_pts, rep_pts, ax)
+            
             ax.set_title('reprojection error = {}'.format(err))
+
             fig.savefig(os.path.join(self.out_err_dir, '{}.png'.format(name)))
             plt.close(fig)
             
         return err
-        
-    def run(self):
+    
+
+
+    
+    def run(self, adjust_bundle = False):
         """
-        Runs the structure from motion algorithm.
+        Runs the structure from motion algorithm with bundle adjustment.
 
         This method performs the following steps:
         1. Performs baseline pose estimation for the first two images.
         2. Performs baseline triangulation for the first two images.
         3. Generates a 3D point cloud and evaluates reprojection error for the first two images.
         4. Performs pose estimation, triangulation, and reprojection error evaluation for the remaining images.
-        5. Calculates the mean reprojection error for all images.
+        5. Performs bundle adjustment to refine camera poses and 3D point cloud.
+        6. Calculates the mean reprojection error for all images.
 
         Returns:
             None
@@ -468,7 +547,7 @@ class SFM(object):
 
         views_done = 2 
 
-        #3d point cloud generation and reprojection error evaluation
+        # 3d point cloud generation and reprojection error evaluation
         self.generate_ply(os.path.join(self.out_cloud_dir, 'cloud_{}_view.ply'.format(views_done)))
 
         err1 = self.compute_reprojection_error(name1)
@@ -481,7 +560,7 @@ class SFM(object):
 
         for new_name in self.image_names[2:]: 
 
-            #new camera registration
+            # New camera registration
             t1 = time()
             self.new_view_pose_estimation(new_name)
             t2 = time()
@@ -489,14 +568,14 @@ class SFM(object):
             total_time += this_time
             print('Camera {0}: Pose Estimation [time={1:.3}s]'.format(new_name, this_time))
 
-            #triangulation for new registered camera
+            # Triangulation for new registered camera
             self.trangulate_new_view(new_name)
             t1 = time()
             this_time = t1-t2
             total_time += this_time
             print('Camera {0}: Triangulation [time={1:.3}s]'.format(new_name, this_time))
 
-            #3d point cloud update and error for new camera
+            # 3d point cloud update and error for new camera
             views_done += 1 
             self.generate_ply(os.path.join(self.out_cloud_dir, 'cloud_{}_view.ply'.format(views_done)))
 
@@ -504,8 +583,14 @@ class SFM(object):
             errors.append(new_err)
             print('Camera {}: Reprojection Error = {}'.format(new_name, new_err))
 
+        # if adjust_bundle == True:
+        #     run_bundle_adjustment()
+
+
+
         mean_error = sum(errors) / float(len(errors))
         print('Reconstruction Completed: Mean Reprojection Error = {2} [t={0:.6}s], Results stored in {1}'.format(total_time, self.opts.out_dir, mean_error))
+
         
 
 if __name__=='__main__': 
@@ -516,4 +601,4 @@ if __name__=='__main__':
     opts.plot_error = True
     
     sfm = SFM(opts)
-    sfm.run()
+    sfm.run(adjust_bundle=False)

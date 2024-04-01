@@ -14,6 +14,19 @@
           }
         }
     </script>
+	<title>Image Display</title>
+    <style>
+        .image-row {
+            display: flex;
+            justify-content: space-around; /* Spaces out the images evenly */
+            margin-bottom: 20px; /* Adds space between the rows */
+        }
+        .image-row img {
+            max-height: 200px; /* Increases the height of the images */
+            max-width: 200px; /* Increases the width of the images */
+            margin: 10px; /* Adds space around the images */
+        }
+    </style>
 	</head>
 	<body>
 		<h1 style="text-align: center;">Assignment 2</h1>
@@ -44,7 +57,94 @@
 				</ul>
 		</p>
 		<h2>Structure From Motion</h2>
-        <div id="container"></div>
+		<h3>MY OUTPUT - FOUNTAIN</h3>
+        <div id="container1"></div>
+		<h3>COLMAP OUTPUT - FOUNTAIN</h3>
+		<div id="container2"></div>
+		<h3>MY OUTPUT - HERZ-JESUS-P8</h3>
+		<div id="container3"></div>
+		<h3>COLMAP OUTPUT - HERZ-JESUS-P8</h3>
+		<div id="container4"></div>	
+
+		<p>We see that Colmap implementation gives little more accurate results than our since it accounts for bundle adjustments as well. Still the results are pretty similar.</p>
+
+		<h2>Fountain-P11 - Visualization below:</h2>
+		<div class="image-container">
+			<img src="../assets/assignment2/results/fountain-P11/errors/0000.png" alt="Image 1">
+			<img src="../assets/assignment2/results/fountain-P11/errors/0001.png" alt="Image 2">
+			<img src="../assets/assignment2/results/fountain-P11/errors/0002.png" alt="Image 3">
+			<img src="../assets/assignment2/results/fountain-P11/errors/0003.png" alt="Image 4">
+			<img src="../assets/assignment2/results/fountain-P11/errors/0004.png" alt="Image 5">
+			<img src="../assets/assignment2/results/fountain-P11/errors/0005.png" alt="Image 6">
+			<img src="../assets/assignment2/results/fountain-P11/errors/0006.png" alt="Image 7">
+			<img src="../assets/assignment2/results/fountain-P11/errors/0007.png" alt="Image 8">
+			<img src="../assets/assignment2/results/fountain-P11/errors/0008.png" alt="Image 9">
+			<img src="../assets/assignment2/results/fountain-P11/errors/0009.png" alt="Image 10">
+			<img src="../assets/assignment2/results/fountain-P11/errors/0010.png" alt="Image 11">
+		</div>
+		<p>Mean Reprojection Error = 4.7275 [t=13.74212s]</p>
+		
+		
+
+		<h2>Herz-Jesus-P8 - Visualization below:</h2>
+		<div class="image-container">
+			<img src="../assets/assignment2/results/Herz-Jesus-P8/errors/0000.png" alt="Image 1">
+			<img src="../assets/assignment2/results/Herz-Jesus-P8/errors/0001.png" alt="Image 2">
+			<img src="../assets/assignment2/results/Herz-Jesus-P8/errors/0002.png" alt="Image 3">
+			<img src="../assets/assignment2/results/Herz-Jesus-P8/errors/0003.png" alt="Image 4">
+			<img src="../assets/assignment2/results/Herz-Jesus-P8/errors/0004.png" alt="Image 5">
+			<img src="../assets/assignment2/results/Herz-Jesus-P8/errors/0005.png" alt="Image 6">
+			<img src="../assets/assignment2/results/Herz-Jesus-P8/errors/0006.png" alt="Image 7">
+			<img src="../assets/assignment2/results/Herz-Jesus-P8/errors/0007.png" alt="Image 8">
+		</div>
+		<p>Mean Reprojection Error = 6.702758570819453 [t=8.74212s]</p>
+
+		<p> I have set outlier_thre to 0.3 for Herz-Jesus dataset for experimentation purposes and got reprojection error of 6.702. For Fountain I got a mean error of 4.728 while keeping outlier_thre as 0.9</p>
+
+		<h2>Structure From Motion</h2>
+		<p>Structure from Motion (SFM) is an intricate process that converts multiple two-dimensional images of a static scene into a three-dimensional model. This transformation occurs through several detailed and interconnected steps, each contributing to the final reconstruction accuracy and completeness.</p>
+
+		<h3>Feature Extraction and Matching</h3>
+		<p>The initial stage in the SFM pipeline is the identification and description of key points or features within each image. These features are distinct patterns or points in the image, such as corners, edges, or textured areas, which can be consistently recognized across different images of the same scene. Advanced algorithms analyze the images to detect these features and represent them as descriptors, which are unique signatures of the local appearance around each feature. The matching process then compares these descriptors across images to find correspondences, which are pairs of features that represent the same physical point in the scene viewed from different angles. This step is crucial as it lays the foundational data for subsequent geometric interpretations.</p>
+
+		<h3>Pose Estimation</h3>
+		<p>Once feature correspondences are established between image pairs, the next step is to estimate the camera pose for each image, which includes its position and orientation in space. This estimation relies on geometric principles, where the relative poses between camera views are determined using the fundamental and essential matrices. These matrices encode the intrinsic projective geometry between pairs of images, facilitating the calculation of the camera's rotation and translation. This process, often initiated with a robust pair of images, sets up a reference framework for the scene's 3D structure.</p>
+
+		<h3>Triangulation</h3>
+		<p>With the camera poses estimated, triangulation is used to convert the 2D feature correspondences into 3D points. This process involves projecting rays from the camera center through the feature points in images and finding the point in space where these rays intersect. Triangulation is applied to pairs of images and requires accurate camera pose and intrinsic parameters to compute the three-dimensional coordinates accurately, gradually building a point cloud that represents the scene's structure.</p>
+
+		<h3>New View Registration</h3>
+		<p>As the reconstruction progresses, new images are incrementally integrated into the existing 3D model. This involves detecting and matching features in the new image with those already in the 3D model and estimating the camera pose for this new view. The new data points are then triangulated to refine and expand the 3D model. This iterative process continues, with each new image contributing additional information and detail to the model, enhancing its depth and resolution.</p>
+
+		<h3>Bundle Adjustment</h3>
+		<p>Bundle adjustment is a critical optimization step that refines the entire reconstruction to minimize errors. It simultaneously adjusts the 3D coordinates of the points, the camera positions, and orientations to reduce the difference between the observed image points and the projected points from the 3D model. This optimization is global, considering all images and points in the model, and is key to enhancing the accuracy and coherence of the final 3D reconstruction.</p>
+
+		<h3>Reprojection Error and Visualization</h3>
+		<ol>
+			<li><strong>Reprojection Error Measurement:</strong> Reprojection error is used to measure the accuracy of the 3D reconstruction process, calculating the distance between the actual image points and their projections from the 3D model, utilizing the estimated camera parameters.</li>
+			<li><strong>Importance in SFM Process:</strong> This error is a critical metric for evaluating the quality of the Structure from Motion (SFM) process.</li>
+			<li><strong>Visualization of Reconstructed Scene:</strong> The final visual representation of the scene is typically rendered as a point cloud or mesh, with enhanced realism through textures and colors from the original images.</li>
+			<li><strong>Transformation by reprojection_points Method:</strong> The <code>reprojection_points</code> method transforms 3D world coordinates into 2D image coordinates using the camera's intrinsic parameters (K), rotation matrix (R), and translation vector (t).</li>
+			<li><strong>Computation of Reprojection Error:</strong> The <code>compute_reprojection_error</code> method calculates the average distance between these projected points and the actual image points, quantifying the 3D reconstruction's accuracy. If enabled, this method also generates a visual plot showing these correspondences, highlighting the projection accuracy.</li>
+		</ol>
+		
+
+		<h3>Algorithm:</h3>
+		<ul>
+			<li><strong>Argument Parsing and Setup:</strong> Configure SFM process settings, directories, and initialization.</li>
+			<li><strong>Feature Extraction:</strong> Detect and describe keypoints in each image using algorithms like SIFT.</li>
+			<li><strong>Feature Matching:</strong> Find corresponding features across images using algorithms such as BFMatcher.</li>
+			<li><strong>Baseline Pose Estimation:</strong> Compute the initial relative camera pose using epipolar geometry.</li>
+			<li><strong>Triangulation of Baseline Views:</strong> Create an initial 3D point cloud by triangulating matched points.</li>
+			<li><strong>Incremental View Addition and Triangulation:</strong> Add new images to the model, estimating their pose and triangulating new points.</li>
+			<li><strong>Bundle Adjustment (Optional):</strong> Optimize camera poses and 3D point coordinates to minimize reprojection error.</li>
+			<li><strong>Reprojection Error Calculation:</strong> Measure the accuracy of the reconstruction by comparing projected 3D points with original 2D image points.</li>
+			<li><strong>3D Model Generation and Visualization:</strong> Build a 3D point cloud model and optionally colorize it for enhanced visualization.</li>
+			<li><strong>Output and Reporting:</strong> Save the 3D model, report errors, and generate visualizations of the reconstruction quality.</li>
+		</ul>
+		
+		
 		<script type="module" src="../js/assignment2.js"></script>
+
 	</body>
 </html>
