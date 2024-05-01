@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8">
-		<title>assignment2</title>
+		<title>assignment3</title>
 		<style>
 			body { margin: 0; }
 		</style>
@@ -42,7 +42,53 @@
 				</ul>
 		</p>
 		<h2>NeRF/3DGS</h2>
-        <div id="container"></div>
+		<h3>Training NeRF on buldozer pre built dataset</h3>
+		<iframe width="560" height="315" src="../plots/output.mp4" frameborder="0" allowfullscreen></iframe>
+		<h3>Training NeRF on my custom video</h3>
+		<iframe width="560" height="315" src="../plots/output_nerf.mp4" frameborder="0" allowfullscreen></iframe>
+		<h3>Extra Credit: Training 3DGS on my custom data</h3>
+		<iframe width="560" height="315" src="../plots/output_gaussian.mp4" frameborder="0" allowfullscreen></iframe>
+
+		<h3>MY OUTPUT - Point Cloud - NeRF (Custom Data) below</h3>
+		<p> some of the point cloud points have been edited to focus on the main object of concern.</p>
+        <div id="container1"></div>
+		<h3>COLMAP OUTPUT - Point Cloud (Custom Data) below</h3>
+		<div id="container2"></div>
+		<h3>MY OUTPUT - 3DGS - Splat (Extra Credit - Custom Data) below</h3>
+		<div id="container3"></div>
+		<!-- <h3>COLMAP OUTPUT - HERZ-JESUS-P8</h3>
+		<div id="container4"></div>	 -->
+
+		<p>The Neural Radiance Fields (NeRF) project is a breakthrough in computer graphics and 3D scene reconstruction. NeRF models scenes by learning a continuous function that predicts the color and density of a 3D point given its spatial coordinates.</p>
+    
+
+		<h2>Project details</h2>
+		<ol>
+			<li>Implemented and trained NeRF and 3DGS on Colab demo. </li>
+			<li>Generated point clouds of nerf implementation and compared it with COLMAP point cloud. We see that NeRF has denser and more accurate 3d reconstruction.</li>
+			<li>Trained on both inbuilt buldozer dataset and custom datset.</li>
+		</ol>
+			
+    <h2>Algorithms Used</h2>
+    <ol>
+        <li><strong>NeRF Architecture:</strong> NeRF utilizes a neural network architecture that takes a 3D coordinate as input and outputs the color and density of the point at that location.</li>
+        <li><strong>Ray Marching:</strong> NeRF employs ray marching to render scenes by shooting rays from the camera through each pixel and using the NeRF network to sample colors and densities along these rays.</li>
+        <li><strong>Volume Rendering:</strong> Rendered images are created through volume rendering techniques, integrating sampled colors and densities along each ray to produce pixel values.</li>
+        <li><strong>Loss Functions:</strong> NeRF minimizes losses such as rendering loss and regularization losses during training to ensure high-quality renderings and prevent overfitting.</li>
+    </ol>
+    
+    <h2>Visualizations</h2>
+    <ol>
+        <li><strong>Rendered Images:</strong> Visualizations of NeRF-generated images showcase the high-quality rendering of scenes, including realistic lighting, shadows, and textures.</li>
+        <li><strong>Depth Maps:</strong> Depth maps derived from NeRF can visualize scene geometry and depth perception, aiding in understanding the 3D structure of rendered scenes.</li>
+        <li><strong>Rendering Progress:</strong> Visualizing the rendering progress during training shows how NeRF improves over time, starting from coarse approximations to detailed and realistic renderings.</li>
+        <li><strong>Comparison:</strong> Visual comparisons between NeRF-rendered images and COLMAP highlight the model's accuracy in capturing scene details, colors, and lighting.</li>
+    </ol>
+
+
+
+
+        <!-- <div id="container1"></div> -->
 		<script type="module" src="../js/assignment3.js"></script>
 	</body>
 </html>
